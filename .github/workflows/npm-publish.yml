@@ -25,16 +25,36 @@ jobs:
       - name: "🧱 build package"
         run: pnpm build
 
+      - name: "🗄️ archive package"
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
           registry-url: https://registry.npmjs.org/
+
+      - name: "📦 install dependencies"
+        run: pnpm install
+
+      - name: "🚚 download package"
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
 
       - name: "🚀 publish package"
         run: npx tsx ./scripts/ci/publish-package.ts
