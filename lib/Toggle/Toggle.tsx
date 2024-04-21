@@ -160,7 +160,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
     if (!node) return;
 
-    const accessibleName = computeAccessibleName(node);
+    const accessibleName = computeAccessibleName(node, { hidden: true });
 
     if (!accessibleName) {
       logger(

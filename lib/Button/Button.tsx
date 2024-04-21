@@ -113,7 +113,7 @@ const ButtonBase = <
       (node as HTMLButtonElement).disabled = disabled;
     }
 
-    const accessibleName = computeAccessibleName(node);
+    const accessibleName = computeAccessibleName(node, { hidden: true });
 
     if (!accessibleName) {
       logger(

@@ -120,7 +120,7 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const context: DialogContextValue = { open, role, emitClose };
 
-  if (document) {
+  if (typeof document !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEventListener(
       {

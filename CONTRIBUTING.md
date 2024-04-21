@@ -6,7 +6,7 @@ The following is a set of guidelines for contributing to StylelessUi and its pac
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the [Code of Conduct](https://github.com/styleless-ui/react-styleless-ui/blob/next/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project and everyone participating in it is governed by the [Code of Conduct](https://github.com/styleless-ui/react-styleless-ui/blob/stable/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## A large spectrum of contributions
 

@@ -16,7 +16,3 @@ Choose the right checklist for the change that you're making:
 - [ ] Tests added
 - [ ] Documentation added
 - [ ] Telemetry added. In case of a feature if it's used or not.
-
-## Documentation / Examples
-
-- [ ] Make sure the linting passes by running `yarn lint`

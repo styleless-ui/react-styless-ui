@@ -18,11 +18,10 @@ Our project [roadmap](https://github.com/orgs/styleless-ui/projects/1/views/1?vi
 
 ## Contributing
 
-Read the [contributing guide](https://github.com/styleless-ui/react-styleless-ui/blob/next/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes.
+Read the [contributing guide](https://github.com/styleless-ui/react-styleless-ui/blob/stable/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes.
 
 Contributing to styleless-ui is about more than just issues and pull requests! There are many other ways to support the project beyond contributing to the code base.
 
-
 ## License
 
-This project is licensed under the terms of the [MIT license](https://github.com/styleless-ui/react-styleless-ui/blob/next/LICENSE).
+This project is licensed under the terms of the [MIT license](https://github.com/styleless-ui/react-styleless-ui/blob/stable/LICENSE).
