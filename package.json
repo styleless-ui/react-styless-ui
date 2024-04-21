@@ -1,6 +1,6 @@
 {
   "name": "@styleless-ui/react",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "Completely unstyled, headless and accessible React UI components.",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
   "license": "MIT",
@@ -14,8 +14,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/",
-    "tag": "rc"
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
     "ui",
@@ -53,6 +52,7 @@
     "@types/react": "^18.2.70",
     "@types/react-dom": "^18.2.22",
     "@types/react-is": "^18.2.4",
+    "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
     "classnames": "^2.5.1",
@@ -75,6 +75,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.5",
+    "semver": "^7.6.0",
     "terser": "^5.29.2",
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.1",
