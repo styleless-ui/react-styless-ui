@@ -17,6 +17,7 @@ export { default as createVirtualElement } from "./create-virtual-element";
 export { default as dispatchDiscreteCustomEvent } from "./dispatch-discrete-custom-event";
 export * from "./dom";
 export { default as forkRefs } from "./fork-refs";
+export { default as getScrollingState } from "./get-scrolling-state";
 export * from "./is";
 export * from "./math";
 export { default as requestFormSubmit } from "./request-form-submit";
