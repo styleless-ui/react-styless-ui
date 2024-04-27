@@ -60,7 +60,7 @@ const BaseMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       </div>
     );
 
-    if (trapFocus)
+    if (trapFocus) {
       return (
         <FocusTrap
           enabled={open}
@@ -69,6 +69,7 @@ const BaseMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           {renderMenu()}
         </FocusTrap>
       );
+    }
 
     return renderMenu();
   };

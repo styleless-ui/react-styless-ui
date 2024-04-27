@@ -1,6 +1,7 @@
 import * as React from "react";
 import Portal from "../Portal";
 import {
+  FocusTrap,
   SystemError,
   SystemKeys,
   resolvePropWithRenderContext,
@@ -8,6 +9,7 @@ import {
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
+  getScrollingState,
   useDeterministicId,
   useEventListener,
   useIsMounted,
@@ -97,7 +99,9 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       previouslyFocusedElement.current =
         document.activeElement as HTMLElement | null;
 
-      disablePageScroll();
+      const isBodyScrolling = getScrollingState(document.body).vertical;
+
+      if (isBodyScrolling) disablePageScroll();
     } else {
       enablePageScroll();
 
@@ -127,9 +131,11 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keydown",
         handler: event => {
-          event.preventDefault();
+          if (event.key === SystemKeys.ESCAPE) {
+            event.preventDefault();
 
-          if (event.key === SystemKeys.ESCAPE) emitClose();
+            emitClose();
+          }
         },
       },
       open,
@@ -140,26 +146,28 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   return (
     <Portal>
-      <div
-        data-slot="Portal:Root"
-        role="presentation"
-        tabIndex={-1}
-        aria-hidden={!open}
-        style={{ position: "absolute", top: 0, left: 0, right: 0 }}
-      >
+      <FocusTrap enabled={open}>
         <div
-          {...otherProps}
-          id={id}
-          ref={ref}
-          className={className}
-          data-slot={RootSlot}
-          data-open={open ? "" : undefined}
+          data-slot="Portal:Root"
+          role="presentation"
+          tabIndex={-1}
+          aria-hidden={!open}
+          style={{ position: "absolute", top: 0, left: 0, right: 0 }}
         >
-          <DialogContext.Provider value={context}>
-            {children}
-          </DialogContext.Provider>
+          <div
+            {...otherProps}
+            id={id}
+            ref={ref}
+            className={className}
+            data-slot={RootSlot}
+            data-open={open ? "" : undefined}
+          >
+            <DialogContext.Provider value={context}>
+              {children}
+            </DialogContext.Provider>
+          </div>
         </div>
-      </div>
+      </FocusTrap>
     </Portal>
   );
 };

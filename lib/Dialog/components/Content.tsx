@@ -1,6 +1,5 @@
 import * as React from "react";
 import { logger } from "../../internals";
-import FocusTrap from "../../internals/FocusTrap";
 import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { DialogContext } from "../context";
@@ -39,19 +38,17 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <FocusTrap enabled={ctx.open}>
-      <div
-        {...otherProps}
-        id={id}
-        ref={ref}
-        className={className}
-        role={ctx.role}
-        data-slot={ContentRootSlot}
-        aria-modal="true"
-      >
-        {children}
-      </div>
-    </FocusTrap>
+    <div
+      {...otherProps}
+      id={id}
+      ref={ref}
+      className={className}
+      role={ctx.role}
+      data-slot={ContentRootSlot}
+      aria-modal="true"
+    >
+      {children}
+    </div>
   );
 };
 
