@@ -1,11 +1,7 @@
 import * as React from "react";
-import Button from "../../Button";
+import Button, { type ButtonProps } from "../../Button";
 import { logger } from "../../internals";
-import type {
-  EmptyObjectNotation,
-  PolymorphicComponent,
-  PolymorphicProps,
-} from "../../types";
+import type { PolymorphicComponent, PolymorphicProps } from "../../types";
 import {
   componentWithForwardedRef,
   setRef,
@@ -90,7 +86,9 @@ const TriggerBase = <
   );
 };
 
-const Trigger: PolymorphicComponent<DefaultElementType, EmptyObjectNotation> =
-  componentWithForwardedRef(TriggerBase, "Expandable.Trigger");
+const Trigger: PolymorphicComponent<
+  DefaultElementType,
+  Pick<ButtonProps, "className" | "children" | "disabled">
+> = componentWithForwardedRef(TriggerBase, "Expandable.Trigger");
 
 export default Trigger;
