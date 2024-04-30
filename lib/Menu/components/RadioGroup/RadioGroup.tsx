@@ -1,11 +1,7 @@
 import * as React from "react";
 import { getLabelInfo } from "../../../internals";
 import type { MergeElementProps } from "../../../types";
-import {
-  componentWithForwardedRef,
-  useControlledProp,
-  useDeterministicId,
-} from "../../../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../../../utils";
 import { RadioGroupRoot as RadioGroupRootSlot } from "../../slots";
 import { RadioGroupContext } from "./context";
 
@@ -39,11 +35,7 @@ type OwnProps = {
   /**
    * The value of the selected radio.
    */
-  value?: string;
-  /**
-   * The default value. Use when the component is not controlled.
-   */
-  defaultValue?: string;
+  value: string;
   /**
    * The Callback is fired when the state changes.
    */
@@ -52,15 +44,14 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultChecked" | "checked" | "onChange" | "onChangeCapture"
+  "defaultChecked" | "checked" | "onChange" | "onChangeCapture" | "defaultValue"
 >;
 
 const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
     className,
-    value: valueProp,
-    defaultValue,
+    value,
     onValueChange,
     label,
     id: idProp,
@@ -77,10 +68,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ].join("\n"),
   });
 
-  const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
-
   const handleChange = (radioValue: string) => {
-    setValue(radioValue);
     onValueChange?.(radioValue);
   };
 
