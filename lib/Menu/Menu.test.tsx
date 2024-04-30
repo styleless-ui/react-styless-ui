@@ -162,7 +162,7 @@ describe("Menu", () => {
             className={radioGroupClassName}
             label={{ screenReaderLabel: "People" }}
             data-testid="g3"
-            defaultValue="pedro"
+            value="pedro"
           >
             <Menu.RadioItem
               className={radioClassName}
@@ -301,7 +301,7 @@ describe("Menu", () => {
           <Menu.RadioGroup
             label={{ screenReaderLabel: "People" }}
             data-testid="g3"
-            defaultValue="pedro"
+            value="pedro"
           >
             <Menu.RadioItem
               data-testid="i8"
@@ -482,7 +482,7 @@ describe("Menu", () => {
           <Menu.RadioGroup
             label={{ screenReaderLabel: "People" }}
             data-testid="g3"
-            defaultValue="pedro"
+            value="pedro"
           >
             <Menu.RadioItem
               data-testid="i8"
@@ -631,7 +631,7 @@ describe("Menu", () => {
           <Menu.RadioGroup
             label={{ screenReaderLabel: "People" }}
             data-testid="g3"
-            defaultValue="pedro"
+            value="pedro"
             onValueChange={handleValueChange}
           >
             <Menu.RadioItem
@@ -759,7 +759,7 @@ describe("Menu", () => {
           <Menu.RadioGroup
             label={{ screenReaderLabel: "People" }}
             data-testid="g3"
-            defaultValue="pedro"
+            value="pedro"
             onValueChange={handleValueChange}
           >
             <Menu.RadioItem
