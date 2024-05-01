@@ -4,13 +4,11 @@ import Popper, {
   type PopperProps,
   type PopperRenderProps,
 } from "../Popper";
-import type { Coordinates } from "../Popper/types";
-import { SystemError, SystemKeys } from "../internals";
+import { SystemKeys } from "../internals";
 import type { MergeElementProps, VirtualElement } from "../types";
 import {
   componentWithForwardedRef,
   contains,
-  createVirtualElement,
   isHTMLElement,
   useControlledProp,
   useDeterministicId,
@@ -59,13 +57,10 @@ type OwnProps = {
   /**
    * The tooltip will be triggered by this event.\
    * **Note**: choosing `"follow-mouse"` will disable `autoPlacement` property.
-   * @default "full-controlled"
+   *
+   * @default "open-on-click"
    */
-  behavior?:
-    | "open-on-hover"
-    | "open-on-click"
-    | "follow-mouse"
-    | "full-controlled";
+  behavior?: "open-on-hover" | "open-on-click";
   /**
    * 	If `true`, the tooltip will be open.
    */
@@ -75,12 +70,17 @@ type OwnProps = {
    */
   defaultOpen?: boolean;
   /**
-   * The Callback is fired when outside of the tooltip is clicked.
+   * The callback is fired when open state changes.
+   */
+  onOpenChange?: (openState: boolean) => void;
+  /**
+   * The callback is fired when outside of the tooltip is clicked.
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
+   *
    * @default false
    */
   keepMounted?: boolean;
@@ -96,24 +96,17 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     children,
     className,
     defaultOpen,
-    resolveAnchor: resolveAnchorProp,
+    resolveAnchor,
     onOutsideClick,
+    onOpenChange,
     id: idProp,
     open: openProp,
     keepMounted = false,
     autoPlacement = false,
     placement = "top",
-    behavior = "full-controlled",
+    behavior = "open-on-click",
     ...otherProps
   } = props;
-
-  if (behavior !== "full-controlled" && typeof openProp !== "undefined") {
-    throw new SystemError(
-      "You are trying to control the `open` property " +
-        'while the `behavior` isn\'t `"full-controlled".`',
-      "Tooltip",
-    );
-  }
 
   const id = useDeterministicId(idProp, "styleless-ui__tooltip");
 
@@ -122,17 +115,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const [open, setOpen] = useControlledProp(openProp, defaultOpen, false);
 
-  const [coordinates, setCoordinates] = React.useState<Coordinates>({
-    x: 0,
-    y: 0,
-  });
-
   const popperActions: PopperProps["actions"] = React.useRef(null);
-
-  const resolveAnchor =
-    behavior === "follow-mouse"
-      ? () => createVirtualElement(0, 0, coordinates.x, coordinates.y)
-      : resolveAnchorProp;
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
     const anchor = resolveAnchor();
@@ -149,6 +132,11 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onOutsideClick?.(event);
   });
 
+  const emitOpenChange = (newOpenState: boolean) => {
+    setOpen(newOpenState);
+    onOpenChange?.(newOpenState);
+  };
+
   if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
     const anchor = resolveAnchor();
@@ -162,9 +150,9 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       {
         target: eventTarget,
         eventType: "click",
-        handler: useEventCallback(
-          () => void (open ? setOpen(false) : setOpen(true)),
-        ),
+        handler: useEventCallback(() => {
+          emitOpenChange(!open);
+        }),
       },
       isHTMLElement(anchor) && behavior === "open-on-click",
     );
@@ -173,7 +161,9 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       {
         target: eventTarget,
         eventType: "mouseenter",
-        handler: useEventCallback(() => void setOpen(true)),
+        handler: useEventCallback(() => {
+          emitOpenChange(true);
+        }),
       },
       isHTMLElement(anchor) &&
         ["open-on-hover", "follow-mouse"].includes(behavior),
@@ -183,22 +173,12 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       {
         target: eventTarget,
         eventType: "mouseleave",
-        handler: useEventCallback(() => void setOpen(false)),
+        handler: useEventCallback(() => {
+          emitOpenChange(false);
+        }),
       },
       isHTMLElement(anchor) &&
         ["open-on-hover", "follow-mouse"].includes(behavior),
-    );
-
-    useEventListener(
-      {
-        target: eventTarget,
-        eventType: "mousemove",
-        handler: useEventCallback<MouseEvent>(event => {
-          setCoordinates({ x: event.clientX, y: event.clientY });
-          popperActions.current?.recompute();
-        }),
-      },
-      isHTMLElement(anchor) && behavior === "follow-mouse",
     );
 
     useEventListener(
@@ -216,7 +196,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keyup",
         handler: useEventCallback<KeyboardEvent>(event => {
-          if (event.key === SystemKeys.ESCAPE) setOpen(false);
+          if (event.key === SystemKeys.ESCAPE) emitOpenChange(false);
         }),
       },
       open && behavior === "open-on-click",
@@ -235,8 +215,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       actions={popperActions}
       className={className}
       keepMounted={keepMounted}
-      autoPlacement={behavior === "follow-mouse" ? false : autoPlacement}
-      offset={behavior === "follow-mouse" ? 32 : undefined}
+      autoPlacement={autoPlacement}
       resolveAnchor={resolveAnchor}
     >
       {children}
