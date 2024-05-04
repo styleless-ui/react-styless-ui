@@ -16,6 +16,7 @@ import type {
 import {
   componentWithForwardedRef,
   dispatchDiscreteCustomEvent,
+  getDirection,
   useDeterministicId,
   useEventCallback,
   useEventListener,
@@ -244,6 +245,12 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       activeElement,
     );
 
+    const dir = getDirection(event.currentTarget as HTMLElement);
+
+    const sameDirectionKey = dir === "rtl" ? SystemKeys.LEFT : SystemKeys.RIGHT;
+    const oppositeDirectionKey =
+      dir === "rtl" ? SystemKeys.RIGHT : SystemKeys.LEFT;
+
     if (currentFocusedElement) {
       switch (event.key) {
         case SystemKeys.ESCAPE: {
@@ -322,7 +329,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           break;
         }
 
-        case SystemKeys.LEFT: {
+        case oppositeDirectionKey: {
           event.preventDefault();
 
           const { item } = currentFocusedElement;
@@ -346,7 +353,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           break;
         }
 
-        case SystemKeys.RIGHT: {
+        case sameDirectionKey: {
           event.preventDefault();
 
           const { item } = currentFocusedElement;
