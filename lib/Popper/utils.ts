@@ -4,6 +4,7 @@ import {
   clamp,
   contains,
   getBoundingClientRect,
+  getDirection,
   getDocumentElement,
   getNodeName,
   getOffsetParent,
@@ -58,7 +59,7 @@ const getAlignmentFromPlacement = (
 const getAlignmentSidesFromPlacement = (
   placement: Placement,
   elementRects: ElementRects,
-  isRtl: boolean,
+  isRTL: boolean,
 ): { mainSide: Side; crossSide: Side } => {
   const alignment = getAlignmentFromPlacement(placement);
   const mainAxis = getMainAxisFromPlacement(placement);
@@ -75,7 +76,7 @@ const getAlignmentSidesFromPlacement = (
 
   let mainSide: Side =
     mainAxis === "x"
-      ? alignment === (isRtl ? "end" : "start")
+      ? alignment === (isRTL ? "end" : "start")
         ? "right"
         : "left"
       : alignment === "start"
@@ -434,9 +435,10 @@ const calcCoordinatesFromPlacement = (args: {
   elements: Elements;
   elementRects: ElementRects;
   strategy: Strategy;
-  isRtl: boolean;
+  isRTL: boolean;
 }): Coordinates => {
-  const { placement, offset, elementRects, elements, strategy, isRtl } = args;
+  const { placement, offset, elementRects, elements, strategy, isRTL } = args;
+
   const { anchorRect, popperRect } = elementRects;
 
   const commonX = anchorRect.x + (anchorRect.width - popperRect.width) / 2;
@@ -473,10 +475,10 @@ const calcCoordinatesFromPlacement = (args: {
 
   switch (alignment) {
     case "start":
-      coordinates[mainAxis] -= commonAlign * (isRtl && isVertical ? -1 : 1);
+      coordinates[mainAxis] -= commonAlign * (isRTL && isVertical ? -1 : 1);
       break;
     case "end":
-      coordinates[mainAxis] += commonAlign * (isRtl && isVertical ? -1 : 1);
+      coordinates[mainAxis] += commonAlign * (isRTL && isVertical ? -1 : 1);
       break;
     default:
   }
@@ -513,7 +515,7 @@ const calcCoordinatesFromPlacement = (args: {
     let crossAxisCoef = 1;
 
     if (alignment === "end") crossAxisCoef = -1;
-    if (isRtl && isVertical) crossAxisCoef *= -1;
+    if (isRTL && isVertical) crossAxisCoef *= -1;
 
     let mainAxisOffset = 0;
     let crossAxisOffset = 0;
@@ -550,11 +552,11 @@ export const suppressViewportOverflow = (
   args: {
     placement: Placement;
     elementRects: ElementRects;
-    isRtl: boolean;
+    isRTL: boolean;
     overflow: ComputationMiddlewareArgs["overflow"];
   },
 ) => {
-  const { overflow, placement, elementRects, isRtl } = args;
+  const { overflow, placement, elementRects, isRTL: isRTL } = args;
   const alignment = getAlignmentFromPlacement(placement);
 
   const _getOppositeAlignment = (placement: Placement) =>
@@ -601,7 +603,7 @@ export const suppressViewportOverflow = (
     const { mainSide, crossSide } = getAlignmentSidesFromPlacement(
       currentPlacement,
       elementRects,
-      isRtl,
+      isRTL,
     );
 
     const currentOverflows = [
@@ -659,7 +661,6 @@ export const computePosition = (
 ): ComputationResult => {
   const {
     strategy,
-    isRtl,
     autoPlacement,
     offset,
     placement: initialPlacement,
@@ -672,8 +673,10 @@ export const computePosition = (
   const elements: Elements = { anchorElement, popperElement };
   const elementRects = getElementRects(elements, strategy);
 
+  const isRTL = getDirection(elements.popperElement) === "rtl";
+
   let { x, y } = calcCoordinatesFromPlacement({
-    isRtl,
+    isRTL,
     offset,
     strategy,
     elements,
@@ -710,7 +713,7 @@ export const computePosition = (
             elementRects,
             placement,
             overflow,
-            isRtl,
+            isRTL,
           });
         }
 
@@ -731,7 +734,7 @@ export const computePosition = (
       placement = result.placement ?? placement;
 
       const coords = calcCoordinatesFromPlacement({
-        isRtl,
+        isRTL,
         offset,
         strategy,
         elements,

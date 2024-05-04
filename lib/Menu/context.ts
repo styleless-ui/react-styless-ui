@@ -5,7 +5,6 @@ type ContextValue = {
   id: string;
   activeElement: HTMLElement | null;
   keepMounted: boolean;
-  alignment: NonNullable<PopperProps["alignment"]>;
   emitClose: () => void;
   emitActiveElementChange: (newActiveElement: HTMLElement | null) => void;
   computationMiddleware: NonNullable<PopperProps["computationMiddleware"]>;

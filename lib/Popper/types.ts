@@ -57,7 +57,6 @@ export type ComputationResult = Coordinates & { placement: Placement };
 export type ComputationConfig = {
   placement: Placement;
   strategy: Strategy;
-  isRtl: boolean;
   autoPlacement: AutoPlacementMiddleware;
   offset: OffsetMiddleware;
   computationMiddleware?: ComputationMiddleware;
