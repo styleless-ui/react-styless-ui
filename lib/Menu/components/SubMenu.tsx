@@ -98,7 +98,8 @@ const SubMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={refCallback}
       activeDescendantId={null}
       resolveAnchor={resolveAnchor}
-      alignment={menuCtx.alignment}
+      alignment="start"
+      autoPlacement={{ excludeSides: ["bottom", "top"] }}
       computationMiddleware={menuCtx.computationMiddleware}
       keepMounted={menuCtx.keepMounted}
       open={openState}
