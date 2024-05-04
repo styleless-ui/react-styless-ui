@@ -9,7 +9,6 @@ import type {
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useDirection,
   useForkedRefs,
   useIsomorphicLayoutEffect,
   useIsomorphicValue,
@@ -134,6 +133,7 @@ type OwnProps = {
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
+   *
    * @default false
    */
   keepMounted?: boolean;
@@ -170,7 +170,6 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const open = useIsomorphicValue(openProp, false);
 
-  const isRtl = useDirection() === "rtl";
   const id = useDeterministicId(idProp, "styleless-ui__popper");
 
   const popperRef = React.useRef<HTMLDivElement>(null);
@@ -194,7 +193,6 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     autoPlacement,
     offset,
     strategy,
-    isRtl,
   };
 
   const updatePosition = () => {
@@ -274,6 +272,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           className={className}
           tabIndex={-1}
           data-slot={Slots.Root}
+          data-placement={placement}
           data-open={open ? "" : undefined}
         >
           {children}
