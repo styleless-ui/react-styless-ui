@@ -17,7 +17,6 @@ import {
   componentWithForwardedRef,
   dispatchDiscreteCustomEvent,
   useDeterministicId,
-  useDirection,
   useEventCallback,
   useEventListener,
   useForkedRefs,
@@ -28,7 +27,7 @@ import { CollapseSubMenuEvent, ExpandSubMenuEvent } from "./constants";
 import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 import {
-  createComputationMiddleware,
+  computationMiddleware,
   getAvailableItem,
   getCurrentFocusedElement,
   getCurrentMenuControllerItem,
@@ -69,7 +68,7 @@ type OwnProps = {
   /**
    * The menu positioning alignment.
    *
-   * @default "start"
+   * @default "middle"
    */
   alignment?: PopperProps["alignment"];
   /**
@@ -120,7 +119,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     className: classNameProp,
     children: childrenProp,
     label,
-    alignment = "start",
+    alignment = "middle",
     open = false,
     keepMounted = false,
     resolveAnchor,
@@ -148,8 +147,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [activeExpandedDescendant, setActiveExpandedDescendant] =
     React.useState<HTMLElement | null>(null);
 
-  const dir = useDirection(rootRef) ?? "ltr";
-
   const emitActiveElementChange = React.useCallback(
     (newActiveItem: HTMLElement | null) => {
       setActiveElement(newActiveItem);
@@ -169,11 +166,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     activeDescendantElement: activeElement,
     onActiveDescendantElementChange: emitActiveElementChange,
   });
-
-  const computationMiddleware = React.useMemo(
-    () => createComputationMiddleware(dir, alignment),
-    [dir, alignment],
-  );
 
   useOnChange(open, currentOpen => {
     if (currentOpen) {
@@ -444,6 +436,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       if (!node) return;
       if (!open) return;
+
       if (document.activeElement === node) return;
 
       node.focus();
@@ -468,7 +461,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     id,
     activeElement,
     keepMounted,
-    alignment,
     emitClose,
     emitActiveElementChange,
     computationMiddleware,
@@ -490,8 +482,9 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <BaseMenu
       {...otherProps}
-      id={id}
       trapFocus
+      autoPlacement={{ excludeSides: ["left", "right"] }}
+      id={id}
       ref={refCallback}
       onKeyDown={handleKeyDown}
       onExitTrap={handleExitTrap}
@@ -499,7 +492,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       activeDescendantId={getActiveDescendant()}
       resolveAnchor={resolveAnchor}
       alignment={alignment}
-      computationMiddleware={computationMiddleware}
       keepMounted={keepMounted}
       open={open}
       label={labelProps}

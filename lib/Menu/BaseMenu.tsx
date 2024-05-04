@@ -12,11 +12,12 @@ type OwnProps = {
   keepMounted: boolean;
   trapFocus: boolean;
   alignment: NonNullable<PopperProps["alignment"]>;
+  autoPlacement?: PopperProps["autoPlacement"];
   activeDescendantId?: string | null;
   label: LabelInfo;
   onExitTrap?: (event: FocusEvent) => void;
   resolveAnchor: NonNullable<MenuProps["resolveAnchor"]>;
-  computationMiddleware: NonNullable<PopperProps["computationMiddleware"]>;
+  computationMiddleware?: PopperProps["computationMiddleware"];
 };
 
 export type Props = Omit<
@@ -34,6 +35,7 @@ const BaseMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     alignment,
     activeDescendantId,
     label,
+    autoPlacement = true,
     onExitTrap,
     resolveAnchor,
     computationMiddleware,
@@ -76,7 +78,7 @@ const BaseMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   return (
     <Popper
-      autoPlacement
+      autoPlacement={autoPlacement}
       keepMounted={keepMounted}
       open={open}
       resolveAnchor={resolveAnchor}

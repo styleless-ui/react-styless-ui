@@ -2,7 +2,7 @@
 import * as React from "react";
 import type { PopperProps } from "../Popper";
 import { logger } from "../internals";
-import { isHTMLElement, useEventCallback } from "../utils";
+import { getDirection, isHTMLElement, useEventCallback } from "../utils";
 import { MenuContext } from "./context";
 
 export const getListItems = (
@@ -121,36 +121,29 @@ export const getCurrentFocusedElement = (
   return { item: null, index: -1 };
 };
 
-export const createComputationMiddleware =
-  (
-    dir: "ltr" | "rtl",
-    alignment: NonNullable<PopperProps["alignment"]>,
-  ): NonNullable<PopperProps["computationMiddleware"]> =>
-  ({ overflow, elementRects, placement }) => {
-    if (dir === "rtl") {
-      const desiredPlacement: typeof placement =
-        alignment === "middle" ? "left" : `left-${alignment}`;
+export const computationMiddleware: NonNullable<
+  PopperProps["computationMiddleware"]
+> = ({ overflow, elementRects, placement, elements }) => {
+  const dir = getDirection(elements.popperElement);
 
-      const oppOfDesiredPlacement: typeof placement =
-        alignment === "middle" ? "right" : `right-${alignment}`;
+  if (dir === "rtl") {
+    const desiredPlacement: typeof placement = "left-start";
+    const oppOfDesiredPlacement: typeof placement = "right-start";
 
-      if (placement === desiredPlacement) return { placement };
-      if (overflow.left + elementRects.popperRect.width <= 0) {
-        return { placement: desiredPlacement };
-      } else return { placement: oppOfDesiredPlacement };
-    } else {
-      const desiredPlacement: typeof placement =
-        alignment === "middle" ? "right" : `right-${alignment}`;
+    if (placement === desiredPlacement) return { placement };
+    if (overflow.left + elementRects.popperRect.width <= 0) {
+      return { placement: desiredPlacement };
+    } else return { placement: oppOfDesiredPlacement };
+  } else {
+    const desiredPlacement: typeof placement = "right-start";
+    const oppOfDesiredPlacement: typeof placement = "left-start";
 
-      const oppOfDesiredPlacement: typeof placement =
-        alignment === "middle" ? "left" : `left-${alignment}`;
-
-      if (placement === desiredPlacement) return { placement };
-      if (overflow.right + elementRects.popperRect.width <= 0) {
-        return { placement: desiredPlacement };
-      } else return { placement: oppOfDesiredPlacement };
-    }
-  };
+    if (placement === desiredPlacement) return { placement };
+    if (overflow.right + elementRects.popperRect.width <= 0) {
+      return { placement: desiredPlacement };
+    } else return { placement: oppOfDesiredPlacement };
+  }
+};
 
 export const getMenuItem = (event: React.MouseEvent) => {
   if (isHTMLElement(event.target)) {
