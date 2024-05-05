@@ -57,7 +57,7 @@ export type Props = Omit<
     | {
         multiple: true;
         /**
-         * The value of the active toggle.
+         * The value of the active toggles.
          */
         value?: string[];
         /**

@@ -16,6 +16,7 @@ export type Props = {
   children: JSX.Element;
   /**
    * If `true`, the focus will be redirected here (once!).
+   *
    * @default false
    */
   enabled?: boolean;

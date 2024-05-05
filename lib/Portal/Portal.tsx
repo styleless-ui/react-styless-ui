@@ -17,6 +17,7 @@ export type Props = {
   children: React.ReactNode;
   /**
    * If `true`, the `children` will be under the DOM hierarchy of the parent component.
+   *
    * @default false
    */
   disabled?: boolean;

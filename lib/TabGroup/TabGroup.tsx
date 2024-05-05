@@ -1,9 +1,8 @@
 import * as React from "react";
-import { SystemError, logger } from "../internals";
+import { SystemError } from "../internals";
 import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
-  isFragment,
   useControlledProp,
   useForkedRefs,
   useIsMounted,
@@ -35,12 +34,14 @@ type OwnProps = {
   /**
    * Indicates whether the element's orientation is horizontal or vertical.
    * This effects the keyboard interactions.
+   *
    * @default "horizontal"
    */
   orientation?: "horizontal" | "vertical";
   /**
    * If `automatic`, tabs are automatically activated and their panel is displayed when they receive focus.
    * If `manual`, users activate a tab and display its panel by focusing them and pressing `Space` or `Enter`.
+   *
    * @default "manual"
    */
   keyboardActivationBehavior?: "manual" | "automatic";
@@ -53,7 +54,7 @@ export type Props = Omit<
 
 const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
-    children: childrenProp,
+    children,
     className,
     onActiveTabChange,
     defaultActiveTab,
@@ -77,19 +78,6 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [forcedTabability, setForcedTabability] = React.useState<string | null>(
     null,
   );
-
-  const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child) || isFragment(child)) {
-      logger(
-        "The <TabGroup.Root> component doesn't accept `Fragment` or any invalid element as children.",
-        { scope: "TabGroup", type: "error" },
-      );
-
-      return null;
-    }
-
-    return child as React.ReactElement;
-  });
 
   const handleChange = (tabValue: string) => {
     if (!isMounted()) return;
