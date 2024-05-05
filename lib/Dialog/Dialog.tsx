@@ -58,6 +58,7 @@ type OwnProps = {
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
+   *
    * @default false
    */
   keepMounted?: boolean;

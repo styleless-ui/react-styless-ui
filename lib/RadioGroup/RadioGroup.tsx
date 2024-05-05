@@ -52,6 +52,7 @@ type OwnProps = {
       };
   /**
    * The orientation of the group.
+   *
    * @default "vertical"
    */
   orientation?: "horizontal" | "vertical";
