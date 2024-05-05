@@ -46,21 +46,25 @@ type OwnProps = {
   value?: string;
   /**
    * If `true`, the toggle will be focused automatically.
+   *
    * @default false
    */
   autoFocus?: boolean;
   /**
    * If `true`, the toggle will be pressed.
+   *
    * @default false
    */
   pressed?: boolean;
   /**
    * The default state of `pressed`. Use when the component is not controlled.
+   *
    * @default false
    */
   defaultPressed?: boolean;
   /**
    * If `true`, the toggle will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
