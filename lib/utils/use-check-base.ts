@@ -21,8 +21,8 @@ type CheckBaseProps = {
   keyboardActivationBehavior?: "manual" | "automatic";
   value?: string;
   groupCtx: GenericGroupContextValue | null;
-  checked?: boolean | "indeterminated";
-  defaultChecked?: boolean | "indeterminated";
+  checked?: boolean | "indeterminate";
+  defaultChecked?: boolean | "indeterminate";
   togglable?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
@@ -122,7 +122,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       event.preventDefault();
 
       const newChecked =
-        checkedState === "indeterminated" ? true : !checkedState;
+        checkedState === "indeterminate" ? true : !checkedState;
 
       emitChange(newChecked);
     },
@@ -293,7 +293,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       }
 
       const newChecked =
-        checkedState === "indeterminated" ? true : !checkedState;
+        checkedState === "indeterminate" ? true : !checkedState;
 
       if (event.key === SystemKeys.SPACE) {
         emitChange(newChecked);

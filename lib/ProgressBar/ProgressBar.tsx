@@ -18,9 +18,9 @@ export type RenderProps = {
    */
   valueText: string;
   /**
-   * Determines whether the progress bar is indeterminated or not.
+   * Determines whether the progress bar is indeterminate or not.
    */
-  indeterminated: boolean;
+  indeterminate: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -37,7 +37,7 @@ type OwnProps = {
   /**
    * The current value of the progress bar.
    */
-  value: number;
+  value: number | "indeterminate";
   /**
    * The minimum allowed value of the progress bar.
    * Should not be greater than or equal to `max`.
@@ -52,14 +52,11 @@ type OwnProps = {
    * A string value that provides a user-friendly name
    * for the current value of the progress bar.
    * This is important for screen reader users.
+   *
+   * If component is indeterminate, it ignores valuetext
+   * since we don't have any deterministic value.
    */
   valueText: string;
-  /**
-   * If `true`, the progress bar value will be indeterminate.
-   *
-   * @default false;
-   */
-  indeterminated?: boolean;
   /**
    * The label of the component.
    */
@@ -89,7 +86,6 @@ const ProgressBarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     className: classNameProp,
     children: childrenProp,
-    indeterminated = false,
     value,
     min,
     max,
@@ -106,13 +102,19 @@ const ProgressBarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ].join("\n"),
   });
 
-  const percentageValue = remap(value, min, max, 0, 100);
+  const isIndeterminate = value === "indeterminate";
+
+  const numericValue = isIndeterminate ? min : value;
+
+  const percentageValue = isIndeterminate
+    ? min
+    : remap(numericValue, min, max, 0, 100);
 
   const renderProps: RenderProps = {
     percentageValue,
-    value,
+    value: numericValue,
     valueText,
-    indeterminated,
+    indeterminate: isIndeterminate,
   };
 
   const classNameProps: ClassNameProps = renderProps;
@@ -126,14 +128,14 @@ const ProgressBarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       role="progressbar"
       ref={ref}
       className={className}
-      aria-valuenow={indeterminated ? undefined : value}
+      aria-valuenow={isIndeterminate ? undefined : value}
       aria-valuemin={min}
       aria-valuemax={max}
-      aria-valuetext={indeterminated ? undefined : valueText}
+      aria-valuetext={isIndeterminate ? undefined : valueText}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       data-slot={RootSlot}
-      data-indeterminated={indeterminated ? "" : undefined}
+      data-indeterminate={isIndeterminate ? "" : undefined}
     >
       {children}
     </div>
