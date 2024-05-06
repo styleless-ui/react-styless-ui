@@ -55,8 +55,7 @@ type OwnProps = {
    */
   autoPlacement?: PopperProps["autoPlacement"];
   /**
-   * The tooltip will be triggered by this event.\
-   * **Note**: choosing `"follow-mouse"` will disable `autoPlacement` property.
+   * The tooltip will be triggered by this event.
    *
    * @default "open-on-click"
    */
@@ -137,6 +136,32 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onOpenChange?.(newOpenState);
   };
 
+  React.useEffect(() => {
+    if (!open && !keepMounted) return;
+
+    const anchor = resolveAnchor();
+
+    if (!anchor || !(anchor instanceof HTMLElement)) return;
+
+    let describedBy = anchor.getAttribute("aria-describedby");
+
+    if (describedBy) {
+      if (describedBy.includes(id)) return;
+
+      describedBy += ` ${id}`;
+    } else describedBy = id;
+
+    anchor.setAttribute("aria-describedby", describedBy);
+
+    return () => {
+      anchor.setAttribute(
+        "aria-describedby",
+        describedBy.replace(id, "").trim(),
+      );
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, open, keepMounted]);
+
   if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
     const anchor = resolveAnchor();
@@ -165,8 +190,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           emitOpenChange(true);
         }),
       },
-      isHTMLElement(anchor) &&
-        ["open-on-hover", "follow-mouse"].includes(behavior),
+      isHTMLElement(anchor) && behavior === "open-on-hover",
     );
 
     useEventListener(
@@ -177,8 +201,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           emitOpenChange(false);
         }),
       },
-      isHTMLElement(anchor) &&
-        ["open-on-hover", "follow-mouse"].includes(behavior),
+      isHTMLElement(anchor) && behavior === "open-on-hover",
     );
 
     useEventListener(
