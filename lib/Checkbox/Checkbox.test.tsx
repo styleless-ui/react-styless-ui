@@ -41,14 +41,14 @@ describe("Checkbox", () => {
           disabled,
           readOnly,
           focusedVisible,
-          indeterminated,
+          indeterminate,
         }) =>
           classNames("root", {
             "root--disabled": disabled,
             "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
-            "root--indeterminated": indeterminated,
+            "root--indeterminate": indeterminate,
           })
         }
       />,
@@ -73,14 +73,14 @@ describe("Checkbox", () => {
           disabled,
           readOnly,
           focusedVisible,
-          indeterminated,
+          indeterminate,
         }) =>
           classNames("root", {
             "root--disabled": disabled,
             "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
-            "root--indeterminated": indeterminated,
+            "root--indeterminate": indeterminate,
           })
         }
       />,
@@ -96,21 +96,21 @@ describe("Checkbox", () => {
     rerender(
       <Checkbox
         {...mockRequiredProps}
-        checked="indeterminated"
+        checked="indeterminate"
         aria-controls="id1"
         className={({
           checked,
           disabled,
           readOnly,
           focusedVisible,
-          indeterminated,
+          indeterminate,
         }) =>
           classNames("root", {
             "root--disabled": disabled,
             "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
-            "root--indeterminated": indeterminated,
+            "root--indeterminate": indeterminate,
           })
         }
       />,
@@ -118,7 +118,7 @@ describe("Checkbox", () => {
 
     expect(screen.getByRole("checkbox")).toHaveClass(
       "root",
-      "root--indeterminated",
+      "root--indeterminate",
     );
   });
 
@@ -150,7 +150,7 @@ describe("Checkbox", () => {
     render(
       <Checkbox
         {...mockRequiredProps}
-        defaultChecked="indeterminated"
+        defaultChecked="indeterminate"
         aria-controls="id1 id2"
       />,
     );

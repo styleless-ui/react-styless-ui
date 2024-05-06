@@ -29,9 +29,9 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
-   * The `indeterminated` state of the checkbox.
+   * The `indeterminate` state of the checkbox.
    */
-  indeterminated: boolean;
+  indeterminate: boolean;
   /**
    * The `:focus-visible` of the checkbox.
    */
@@ -85,18 +85,18 @@ type OwnProps = {
   /**
    * If `true`, the checkbox will be checked.
    *
-   * If `indeterminated`, the checkbox will appear indeterminate.
+   * If `indeterminate`, the checkbox will appear indeterminate.
    * This does not set the native input element to indeterminate due to inconsistent behavior across browsers.
    *
    * @default false
    */
-  checked?: boolean | "indeterminated";
+  checked?: boolean | "indeterminate";
   /**
    * The default state of `checked`. Use when the component is not controlled.
    *
    * @default false
    */
-  defaultChecked?: boolean | "indeterminated";
+  defaultChecked?: boolean | "indeterminate";
   /**
    * If `true`, the checkbox will be disabled.
    *
@@ -231,13 +231,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     ].join("\n"),
   });
 
-  const isIndeterminated = checkBase.checked === "indeterminated";
+  const isIndeterminated = checkBase.checked === "indeterminate";
   const isChecked = isIndeterminated ? false : (checkBase.checked as boolean);
 
   const renderProps: RenderProps = {
     disabled: isDisabled,
     readOnly: isReadOnly,
-    indeterminated: isIndeterminated,
+    indeterminate: isIndeterminated,
     checked: isChecked,
     focusedVisible: checkBase.isFocusedVisible,
   };
@@ -268,7 +268,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-slot": Slots.Root,
     "data-disabled": isDisabled ? "" : undefined,
     "data-readonly": isReadOnly ? "" : undefined,
-    "data-indeterminated": isIndeterminated ? "" : undefined,
+    "data-indeterminate": isIndeterminated ? "" : undefined,
     "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
     "data-checked": isChecked ? "" : undefined,
   };
