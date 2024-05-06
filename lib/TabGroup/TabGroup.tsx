@@ -1,5 +1,4 @@
 import * as React from "react";
-import { SystemError } from "../internals";
 import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
@@ -85,29 +84,6 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     setActiveTab(tabValue);
     onActiveTabChange?.(tabValue);
   };
-
-  React.useEffect(() => {
-    if (!rootRef.current) return;
-
-    const tabs = Array.from(
-      rootRef.current.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
-    );
-
-    const activeTabElement = tabs.find(
-      tab => tab.getAttribute("data-entity") === activeTab,
-    );
-
-    if (!activeTabElement) return;
-
-    const isActiveTabDisabled =
-      activeTabElement.hasAttribute("disabled") ||
-      activeTabElement.getAttribute("aria-disabled") === "true";
-
-    if (isActiveTabDisabled) {
-      throw new SystemError("The selected tab is `disabled`.", "TabGroup.Root");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   React.useEffect(() => {
     if (!rootRef.current) return;
