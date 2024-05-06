@@ -10,7 +10,6 @@ import {
   componentWithForwardedRef,
   useDeterministicId,
   useForkedRefs,
-  useIsomorphicLayoutEffect,
   useIsomorphicValue,
 } from "../utils";
 import * as Slots from "./slots";
@@ -226,14 +225,6 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [open],
   );
-
-  useIsomorphicLayoutEffect(() => {
-    const anchor = resolveAnchor();
-
-    if (id && anchor instanceof HTMLElement) {
-      anchor.setAttribute("aria-describedby", id);
-    }
-  });
 
   const renderProps: RenderProps = {
     placement,
