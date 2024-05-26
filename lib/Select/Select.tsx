@@ -19,7 +19,7 @@ import {
 import { SelectContext, type SelectContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 import {
-  getOptions,
+  getOptions as getOptionsUtil,
   noValueSelected,
   normalizeValues,
   useElementsRegistry,
@@ -415,6 +415,8 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     closeList();
   }
 
+  const getOptions = () => getOptionsUtil(React.Children.toArray(children));
+
   const context: SelectContextValue = {
     readOnly,
     disabled,
@@ -431,6 +433,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     closeListAndMaintainFocus,
     setFilteredEntities,
     setActiveDescendant,
+    getOptions,
     openList,
     closeList,
     toggleList,
@@ -488,9 +491,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (selectedValues.length === 0) return null;
 
     const renderOptions = () => {
-      const disabledOptions = getOptions(
-        React.Children.toArray(children),
-      ).filter(o => o.disabled);
+      const disabledOptions = getOptions().filter(o => o.disabled);
 
       const isOptionDisabled = (optionValue: string) =>
         disabledOptions.some(o => o.value === optionValue);
@@ -538,7 +539,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     <div
       {...otherProps}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={disabled || readOnly ? "" : undefined}
+      inert={disabled ? "" : undefined}
       style={style}
       id={id}
       ref={handleRootRef}
