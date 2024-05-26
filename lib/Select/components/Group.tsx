@@ -5,10 +5,13 @@ import {
   resolvePropWithRenderContext,
 } from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
-import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import {
+  componentWithForwardedRef,
+  useDeterministicId,
+  useIsServerHandoffComplete,
+} from "../../utils";
 import { SelectContext } from "../context";
 import { GroupRoot as GroupRootSlot } from "../slots";
-import { getOptions } from "../utils";
 
 export type RenderProps = {
   /**
@@ -65,6 +68,8 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__select__group");
 
+  const isServerHandoffComplete = useIsServerHandoffComplete();
+
   const labelInfo = getLabelInfo(label, "Select.Group", {
     customErrorMessage: [
       "Invalid `label` property.",
@@ -75,30 +80,32 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const ctx = React.useContext(SelectContext);
 
+  const getOptionElements = () => {
+    const group = document.getElementById(id);
+
+    if (!group) return [];
+
+    return Array.from(group.querySelectorAll<HTMLElement>(`[role='option']`));
+  };
+
   const isHidden = React.useMemo(() => {
-    let hidden = false;
+    if (!isServerHandoffComplete) return false;
 
     const filtered = ctx?.filteredEntities;
 
-    if (filtered != null) {
-      if (filtered.length === 0) hidden = true;
-      else {
-        const options = getOptions(
-          React.Children.toArray(
-            resolvePropWithRenderContext(childrenProp, { hidden: false }),
-          ),
-          true,
-        );
+    if (filtered == null) return false;
+    if (filtered.length === 0) return true;
 
-        hidden = options.every(
-          option => !filtered.some(value => value === option.value),
-        );
-      }
-    }
+    const optionElements: HTMLElement[] = getOptionElements();
 
-    return hidden;
+    return optionElements.every(
+      optionElement =>
+        !filtered.some(
+          value => value === optionElement.getAttribute("data-entity"),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx?.filteredEntities]);
+  }, [ctx?.filteredEntities, isServerHandoffComplete]);
 
   if (!ctx) {
     logger("You have to use this component as a descendant of <Select.Root>.", {
