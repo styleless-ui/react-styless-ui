@@ -18,12 +18,7 @@ import {
 } from "../utils";
 import { SelectContext, type SelectContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import {
-  getOptions as getOptionsUtil,
-  noValueSelected,
-  normalizeValues,
-  useElementsRegistry,
-} from "./utils";
+import { noValueSelected, normalizeValues, useElementsRegistry } from "./utils";
 
 export type RenderProps = {
   /**
@@ -415,8 +410,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     closeList();
   }
 
-  const getOptions = () => getOptionsUtil(React.Children.toArray(children));
-
   const context: SelectContextValue = {
     readOnly,
     disabled,
@@ -433,7 +426,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     closeListAndMaintainFocus,
     setFilteredEntities,
     setActiveDescendant,
-    getOptions,
     openList,
     closeList,
     toggleList,
@@ -491,29 +483,14 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (selectedValues.length === 0) return null;
 
     const renderOptions = () => {
-      const disabledOptions = getOptions().filter(o => o.disabled);
+      if (!multiple) <option value={selectedValues as string} />;
 
-      const isOptionDisabled = (optionValue: string) =>
-        disabledOptions.some(o => o.value === optionValue);
-
-      if (!multiple) {
-        const optionValue = selectedValues as string;
-
-        if (isOptionDisabled(optionValue)) return null;
-
-        return <option value={optionValue} />;
-      }
-
-      return (selectedValues as string[]).map(value => {
-        if (isOptionDisabled(value)) return null;
-
-        return (
-          <option
-            key={value}
-            value={value}
-          />
-        );
-      });
+      return (selectedValues as string[]).map(value => (
+        <option
+          key={value}
+          value={value}
+        />
+      ));
     };
 
     return (
