@@ -3,6 +3,7 @@ import type { PickAsMandatory } from "../types";
 import {
   Controller,
   EmptyStatement,
+  List,
   Option,
   Trigger,
   type OptionProps,
@@ -25,44 +26,73 @@ export const noValueSelected = (value: string | string[] | undefined) =>
 
 export const getOptions = (
   childArray: Array<Exclude<React.ReactNode, boolean | null | undefined>>,
-): Array<PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">> => {
-  return childArray.reduce(
-    (result, child) => {
-      if (!React.isValidElement(child)) return result;
+) => {
+  let isListFound = false;
 
-      if (
-        child.type === EmptyStatement ||
-        child.type === Controller ||
-        child.type === Trigger
-      ) {
-        return result;
-      }
+  const recurse = (
+    childArray: Array<Exclude<React.ReactNode, boolean | null | undefined>>,
+    isInList = false,
+  ): Array<
+    PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">
+  > => {
+    return childArray.reduce(
+      (result, child) => {
+        if (!React.isValidElement(child)) return result;
 
-      if (child.type === Option) {
-        const { disabled, value, valueLabel } = (
-          child as React.ReactElement<OptionProps>
-        ).props;
+        if (child.type === List) {
+          isListFound = true;
 
-        result.push({ disabled: disabled ?? false, value, valueLabel });
+          const options = recurse(
+            React.Children.toArray(
+              (child as React.ReactElement<{ children: React.ReactNode }>).props
+                .children,
+            ),
+            true,
+          );
 
-        return result;
-      }
+          return [...result, ...options];
+        }
 
-      if (!("children" in child.props)) return result;
+        if (child.type === Option) {
+          if (!isInList) return result;
 
-      const options = getOptions(
-        React.Children.toArray(
-          (child as React.ReactElement<{ children: React.ReactNode }>).props
-            .children,
-        ),
-      );
+          const { disabled, value, valueLabel } = (
+            child as React.ReactElement<OptionProps>
+          ).props;
 
-      return [...result, ...options];
-    },
-    [] as Array<
-      PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">
-    >,
-  );
+          result.push({ disabled: disabled ?? false, value, valueLabel });
+
+          return result;
+        }
+
+        if (
+          child.type === EmptyStatement ||
+          child.type === Controller ||
+          child.type === Trigger
+        ) {
+          return result;
+        }
+
+        if (!("children" in child.props)) return result;
+        if (isListFound && !isInList) return result;
+
+        const options = recurse(
+          React.Children.toArray(
+            (child as React.ReactElement<{ children: React.ReactNode }>).props
+              .children,
+          ),
+          isInList,
+        );
+
+        return [...result, ...options];
+      },
+      [] as Array<
+        PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">
+      >,
+    );
+  };
+
+  return recurse(childArray);
 };
 
 type Registry<Key extends string> = Map<Key, string>;
