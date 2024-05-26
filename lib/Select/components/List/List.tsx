@@ -104,12 +104,15 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!node) return;
 
     const triggerId = ctx.elementsRegistry.getElementId("trigger");
-    const comboboxId = ctx.elementsRegistry.getElementId("combobox");
-
     const triggerNode = document.getElementById(triggerId ?? "");
+    const comboboxId = ctx.elementsRegistry.getElementId("combobox");
     const comboboxNode = document.getElementById(comboboxId ?? "");
 
-    comboboxNode?.setAttribute("aria-controls", id);
+    if (ctx.isListOpen || ctx.keepMounted) {
+      comboboxNode?.setAttribute("aria-controls", id);
+    } else {
+      comboboxNode?.removeAttribute("aria-controls");
+    }
 
     if (!isInitialRenderComplete) return;
 
