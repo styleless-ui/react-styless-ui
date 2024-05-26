@@ -87,10 +87,11 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           React.Children.toArray(
             resolvePropWithRenderContext(childrenProp, { hidden: false }),
           ),
+          true,
         );
 
         hidden = options.every(
-          option => !filtered.some(entity => entity === option.value),
+          option => !filtered.some(value => value === option.value),
         );
       }
     }
