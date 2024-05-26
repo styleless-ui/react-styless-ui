@@ -26,12 +26,13 @@ export const noValueSelected = (value: string | string[] | undefined) =>
 
 export const getOptions = (
   childArray: Array<Exclude<React.ReactNode, boolean | null | undefined>>,
+  isInList = false,
 ) => {
-  let isListFound = false;
+  let isListFound = isInList;
 
   const recurse = (
     childArray: Array<Exclude<React.ReactNode, boolean | null | undefined>>,
-    isInList = false,
+    isInList: boolean,
   ): Array<
     PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">
   > => {
@@ -92,7 +93,7 @@ export const getOptions = (
     );
   };
 
-  return recurse(childArray);
+  return recurse(childArray, isInList);
 };
 
 type Registry<Key extends string> = Map<Key, string>;
