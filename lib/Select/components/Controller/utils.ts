@@ -10,14 +10,15 @@ import {
   useIsomorphicLayoutEffect,
   useOnChange,
 } from "../../../utils";
+import type { SelectContextValue } from "../../context";
 
 type Props<T extends HTMLElement> = {
   disabled: boolean;
   readOnly: boolean;
   autoFocus: boolean;
   searchable: boolean;
-  activeDescendant: HTMLElement | null;
   listOpenState: boolean;
+  activeDescendant: SelectContextValue["activeDescendant"];
   onClick?: React.MouseEventHandler<T>;
   onBlur?: React.FocusEventHandler<T>;
   onFocus?: React.FocusEventHandler<T>;
@@ -26,10 +27,15 @@ type Props<T extends HTMLElement> = {
   onEscapeKeyDown?: React.KeyboardEventHandler<T>;
   onBackspaceKeyDown?: React.KeyboardEventHandler<T>;
   onInputChange?: React.ChangeEventHandler<HTMLInputElement>;
-  getListItems: () => HTMLElement[];
-  onFilteredEntities: (entities: null | string[]) => void;
+  getOptionElements: () => HTMLElement[];
+  getOptionsInfo: SelectContextValue["getOptions"];
+  onFilteredEntities: (
+    entities: SelectContextValue["filteredEntities"],
+  ) => void;
   onListOpenChange: (nextListOpenState: boolean) => void;
-  onActiveDescendantChange: (nextActiveDescendant: HTMLElement | null) => void;
+  onActiveDescendantChange: (
+    nextActiveDescendant: SelectContextValue["activeDescendant"],
+  ) => void;
 };
 
 export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
@@ -42,7 +48,8 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
     onPrintableKeyDown,
     onEscapeKeyDown,
     onBackspaceKeyDown,
-    getListItems,
+    getOptionElements,
+    getOptionsInfo,
     onActiveDescendantChange,
     onListOpenChange,
     onFilteredEntities,
@@ -65,7 +72,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
   const jumpToChar = useJumpToChar({
     activeDescendantElement: activeDescendant,
-    getListItems,
+    getListItems: getOptionElements,
     onActiveDescendantElementChange: onActiveDescendantChange,
   });
 
@@ -140,11 +147,13 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleKeyDown = useEventCallback<React.KeyboardEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) {
+    if (disabled || !isMounted()) {
       event.preventDefault();
 
       return;
     }
+
+    if (readOnly) return;
 
     const getAvailableItem = (
       items: (HTMLElement | null)[],
@@ -195,7 +204,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
             onListOpenChange(true);
           });
 
-          const items = getListItems();
+          const items = getOptionElements();
           const nextActive = getInitialAvailableItem(items, true);
 
           onActiveDescendantChange(nextActive);
@@ -203,7 +212,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
           break;
         }
 
-        const items = getListItems();
+        const items = getOptionElements();
         let nextActive: HTMLElement | null = null;
 
         if (activeDescendant) {
@@ -219,6 +228,8 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       }
 
       case SystemKeys.UP: {
+        if (readOnly) return;
+
         event.preventDefault();
 
         if (!listOpenState) {
@@ -226,7 +237,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
             onListOpenChange(true);
           });
 
-          const items = getListItems();
+          const items = getOptionElements();
           const nextActive = getInitialAvailableItem(items, true);
 
           onActiveDescendantChange(nextActive);
@@ -234,7 +245,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
           break;
         }
 
-        const items = getListItems();
+        const items = getOptionElements();
         let nextActive: HTMLElement | null = null;
 
         if (activeDescendant) {
@@ -257,7 +268,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
         if (!listOpenState) break;
 
-        const items = getListItems();
+        const items = getOptionElements();
         const nextActive = getAvailableItem(items, 0, true);
 
         onActiveDescendantChange(nextActive);
@@ -270,7 +281,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
         if (!listOpenState) break;
 
-        const items = getListItems();
+        const items = getOptionElements();
         const nextActive = getAvailableItem(items, items.length - 1, false);
 
         onActiveDescendantChange(nextActive);
@@ -280,6 +291,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
       case SystemKeys.ESCAPE: {
         event.preventDefault();
+
         onEscapeKeyDown?.(event);
 
         break;
@@ -353,15 +365,15 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
     const query = target.value;
 
-    const items = getListItems();
+    const options = getOptionsInfo();
 
-    const entities = items
-      .filter(item => {
-        const text = item.textContent?.toLowerCase() ?? "";
+    const entities = options
+      .filter(option => {
+        const text = option.valueLabel.toLowerCase();
 
         return text.includes(query.toLowerCase());
       })
-      .map(item => item.getAttribute("data-entity") ?? "");
+      .map(option => option.value);
 
     onFilteredEntities(entities);
     onInputChange?.(event);

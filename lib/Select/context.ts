@@ -1,6 +1,8 @@
 import * as React from "react";
 import { type LabelInfo } from "../internals";
+import type { PickAsMandatory } from "../types";
 import type { RegisteredElementsKeys } from "./Select";
+import type { OptionProps } from "./components";
 import type { ElementsRegistry } from "./utils";
 
 type ContextValue = {
@@ -19,6 +21,9 @@ type ContextValue = {
   closeListAndMaintainFocus: () => void;
   setActiveDescendant: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
   setFilteredEntities: React.Dispatch<React.SetStateAction<null | string[]>>;
+  getOptions: () => Array<
+    PickAsMandatory<OptionProps, "disabled" | "value" | "valueLabel">
+  >;
   openList: () => void;
   closeList: () => void;
   toggleList: () => void;

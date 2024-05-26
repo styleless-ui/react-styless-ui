@@ -83,7 +83,8 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
     searchable: ctx?.searchable ?? false,
     onInputChange: onChange,
     onKeyDown,
-    getListItems: () => {
+    getOptionsInfo: ctx?.getOptions ?? (() => []),
+    getOptionElements: () => {
       const listId = ctx?.elementsRegistry.getElementId("list");
       const listNode = document.getElementById(listId ?? "");
 
