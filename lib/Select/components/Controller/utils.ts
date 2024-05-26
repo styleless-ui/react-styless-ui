@@ -28,7 +28,6 @@ type Props<T extends HTMLElement> = {
   onBackspaceKeyDown?: React.KeyboardEventHandler<T>;
   onInputChange?: React.ChangeEventHandler<HTMLInputElement>;
   getOptionElements: () => HTMLElement[];
-  getOptionsInfo: SelectContextValue["getOptions"];
   onFilteredEntities: (
     entities: SelectContextValue["filteredEntities"],
   ) => void;
@@ -49,7 +48,6 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
     onEscapeKeyDown,
     onBackspaceKeyDown,
     getOptionElements,
-    getOptionsInfo,
     onActiveDescendantChange,
     onListOpenChange,
     onFilteredEntities,
@@ -70,14 +68,10 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
     ref: focusVisibleRef,
   } = useIsFocusVisible<T>();
 
-  const jumpToChar = useJumpToChar({
-    activeDescendantElement: activeDescendant,
-    getListItems: getOptionElements,
-    onActiveDescendantElementChange: onActiveDescendantChange,
-  });
-
   const ref = React.useRef<T>();
   const handleRef = useForkedRefs(ref, focusVisibleRef);
+
+  const cachedOptionElementsRef = React.useRef<HTMLElement[]>([]);
 
   const isSelectOnly = !searchable;
 
@@ -97,12 +91,33 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
     ref.current?.focus();
   }, []);
 
+  const getCachedItems = () => {
+    if (cachedOptionElementsRef.current.length === 0) {
+      cachedOptionElementsRef.current = getOptionElements();
+    }
+
+    return cachedOptionElementsRef.current;
+  };
+
+  const jumpToChar = useJumpToChar({
+    activeDescendantElement: activeDescendant,
+    getListItems: getOptionElements,
+    onActiveDescendantElementChange: onActiveDescendantChange,
+  });
+
   useOnChange(listOpenState, currentOpenState => {
     if (disabled || readOnly) return;
-    if (currentOpenState) return;
     if (!(ref.current instanceof HTMLInputElement)) return;
 
+    if (currentOpenState) {
+      cachedOptionElementsRef.current = getOptionElements();
+
+      return;
+    }
+
     ref.current.value = "";
+    cachedOptionElementsRef.current = [];
+
     onFilteredEntities(null);
   });
 
@@ -169,7 +184,8 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       if (
         item.getAttribute("aria-disabled") === "true" ||
         item.hasAttribute("data-hidden") ||
-        item.getAttribute("aria-hidden") === "true"
+        item.getAttribute("aria-hidden") === "true" ||
+        item.hasAttribute("data-hidden")
       ) {
         const newIdx =
           (forward ? idx + 1 : idx - 1 + items.length) % items.length;
@@ -184,9 +200,20 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       items: (HTMLElement | null)[],
       forward: boolean,
     ) => {
-      const selectedItems = items.filter(item =>
-        item?.hasAttribute("data-selected"),
-      );
+      const selectedItems = items.filter(item => {
+        if (!item) return false;
+
+        if (
+          item.getAttribute("aria-disabled") === "true" ||
+          item.hasAttribute("data-hidden") ||
+          item.getAttribute("aria-hidden") === "true" ||
+          item.hasAttribute("data-hidden")
+        ) {
+          return false;
+        }
+
+        return item.hasAttribute("data-selected");
+      });
 
       return getAvailableItem(
         selectedItems.length > 0 ? selectedItems : items,
@@ -365,15 +392,15 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
     const query = target.value;
 
-    const options = getOptionsInfo();
+    const items = getCachedItems();
 
-    const entities = options
-      .filter(option => {
-        const text = option.valueLabel.toLowerCase();
+    const entities = items
+      .filter(item => {
+        const text = item.textContent?.trim().toLowerCase() ?? "";
 
         return text.includes(query.toLowerCase());
       })
-      .map(option => option.value);
+      .map(item => item.getAttribute("data-entity") ?? "");
 
     onFilteredEntities(entities);
     onInputChange?.(event);
