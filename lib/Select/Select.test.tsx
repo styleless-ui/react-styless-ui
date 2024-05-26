@@ -183,10 +183,10 @@ describe("Select", () => {
   });
 
   it("should have the required attributes", () => {
-    render(
+    const { rerender } = render(
       <Select.Root
+        open
         data-testid="root"
-        defaultOpen
         defaultValue={["0", "1"]}
         multiple
         searchable
@@ -260,6 +260,59 @@ describe("Select", () => {
     expect(option2).toHaveAttribute("aria-hidden", "false");
     expect(option2).toHaveAttribute("aria-disabled", "false");
     expect(option2).toHaveAttribute("aria-selected", "true");
+
+    rerender(
+      <Select.Root
+        open={false}
+        data-testid="root"
+        defaultValue={["0", "1"]}
+        multiple
+        searchable
+        label={{ screenReaderLabel: "Label" }}
+      >
+        <Select.Trigger data-testid="trigger">
+          <Select.Controller
+            autoFocus
+            data-testid="controller"
+          />
+        </Select.Trigger>
+        <Select.List data-testid="list">
+          <Select.EmptyStatement data-testid="empty-statement">
+            No options found!
+          </Select.EmptyStatement>
+          <Select.Option
+            data-testid="o1"
+            disabled
+            value="0"
+            valueLabel="The Shawshank Redemption"
+          >
+            The Shawshank Redemption
+          </Select.Option>
+          <Select.Group
+            data-testid="group"
+            label={{ screenReaderLabel: "Group" }}
+          >
+            <Select.Option
+              data-testid="o2"
+              value="1"
+              valueLabel="The Godfather"
+            >
+              The Godfather
+            </Select.Option>
+            <Select.Option
+              data-testid="o3"
+              value="2"
+              valueLabel="The Godfather: Part 2"
+            >
+              The Godfather: Part 2
+            </Select.Option>
+          </Select.Group>
+        </Select.List>
+      </Select.Root>,
+    );
+
+    expect(list).not.toBeInTheDocument();
+    expect(controller).not.toHaveAttribute("aria-controls");
   });
 
   it("should properly move the active element by keyboard", async () => {

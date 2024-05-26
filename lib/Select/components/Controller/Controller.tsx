@@ -195,7 +195,11 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
 
     if (!listId) return;
 
-    node.setAttribute("aria-controls", listId);
+    if (!ctx.isListOpen && !ctx.keepMounted) {
+      node.removeAttribute("aria-controls");
+    } else {
+      node.setAttribute("aria-controls", listId);
+    }
   };
 
   const controllerProps = {
