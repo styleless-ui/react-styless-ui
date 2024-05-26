@@ -483,7 +483,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (selectedValues.length === 0) return null;
 
     const renderOptions = () => {
-      if (!multiple) <option value={selectedValues as string} />;
+      if (!multiple) return <option value={selectedValues as string} />;
 
       return (selectedValues as string[]).map(value => (
         <option

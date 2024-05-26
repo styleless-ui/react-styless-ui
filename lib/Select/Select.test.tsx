@@ -1005,7 +1005,7 @@ describe("Select", () => {
     });
 
     expect(handleSubmit.mock.calls.length).toBe(2);
-    expect(getFormData().getAll("n")).toEqual(["1"]);
+    expect(getFormData().getAll("n")).toEqual(["0", "1"]);
 
     rerender1(
       <form
@@ -1164,7 +1164,7 @@ describe("Select", () => {
     });
 
     expect(handleSubmit.mock.calls.length).toBe(2);
-    expect(getFormData().get("n")).toBe(null);
+    expect(getFormData().get("n")).toBe("0");
 
     rerender2(
       <form
