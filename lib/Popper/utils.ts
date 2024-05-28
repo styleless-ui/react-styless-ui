@@ -34,9 +34,22 @@ import type {
   Strategy,
 } from "./types";
 
-export const sides = ["top", "right", "bottom", "left"] as const;
-export const alignments = ["end", "start"] as const;
-export const strategies = ["absolute", "fixed"] as const;
+export const sides: Readonly<Side[]> = Object.freeze([
+  "top",
+  "right",
+  "bottom",
+  "left",
+]);
+
+export const alignments: Readonly<Alignment[]> = Object.freeze([
+  "end",
+  "start",
+]);
+
+export const strategies: Readonly<Strategy[]> = Object.freeze([
+  "absolute",
+  "fixed",
+]);
 
 const allPlacements: Readonly<Placement[]> = sides.reduce(
   (result, side) => [...result, side, `${side}-start`, `${side}-end`],
@@ -369,6 +382,9 @@ const getRectRelativeToOffsetParent = (
   };
 };
 
+/**
+ * Returns the anchor and popper rects based on the given strategy.
+ */
 export const getElementRects = (
   elements: Elements,
   strategy: Strategy,
@@ -547,7 +563,7 @@ const calcCoordinatesFromPlacement = (args: {
   return { x, y };
 };
 
-export const suppressViewportOverflow = (
+const suppressViewportOverflow = (
   excludeSides: Side[],
   args: {
     placement: Placement;
@@ -753,7 +769,12 @@ export const computePosition = (
   return { x, y, placement };
 };
 
-export const translate = ({ x, y }: Coordinates) => {
+/**
+ * Returns a translate CSS value that is rounded by DPR.
+ */
+export const translate = (coordinates: Coordinates) => {
+  const { x, y } = coordinates;
+
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
   // Rounding coordinates by DPR

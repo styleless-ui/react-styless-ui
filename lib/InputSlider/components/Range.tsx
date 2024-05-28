@@ -55,8 +55,8 @@ const RangeBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         right: `${position.end}%`,
       },
       vertical: {
-        top: `${position.start}%`,
-        bottom: `${position.end}%`,
+        top: `${position.end}%`,
+        bottom: `${position.start}%`,
       },
     }[orientation],
     position: "absolute",

@@ -1,4 +1,4 @@
-import { clamp, remap } from "../utils";
+import { clamp, lerp, remap } from "../utils";
 import type { Props } from "./InputSlider";
 import type { StopSegment, ThumbInfo } from "./types";
 
@@ -34,22 +34,26 @@ export const getRelativeValue = (
   parentWidthOrHeight: number,
   thumbInfo: ThumbInfo,
   segments: StopSegment[],
-  requiredProps: {
-    max: Props["max"];
-    step: Props["step"];
-  },
+  requiredProps: Pick<Props, "max" | "min" | "step" | "orientation">,
 ) => {
-  const { max, step } = requiredProps;
+  const { max, min, step, orientation } = requiredProps;
 
-  let newValue = remap(clientXOrY, 0, parentWidthOrHeight, 0, max);
+  let newValue: number;
 
-  if (typeof step === "number" && step)
+  if (orientation === "horizontal") {
+    newValue = remap(clientXOrY, 0, parentWidthOrHeight, min, max);
+  } else {
+    newValue = remap(clientXOrY, 0, parentWidthOrHeight, max, min);
+  }
+
+  if (typeof step === "number" && step) {
     newValue = Math.floor(newValue / step) * step;
+  }
 
   if (step === "snap") {
     const stopNums = segments
       .sort()
-      .map(segment => (segment.length * max) / 100);
+      .map(segment => lerp(min, max, segment.length / 100));
 
     newValue = findNearestValue(stopNums, newValue);
   }
