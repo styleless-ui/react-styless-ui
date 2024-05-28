@@ -1,14 +1,14 @@
-import type { Strategy } from "../../../Popper/types";
-import { detectBoundaryOverflow, getElementRects } from "../../../Popper/utils";
+import { PopperUtils } from "../../../utils";
 
 const calcBoundaryOverflow = (
   anchorElement: HTMLElement,
   element: HTMLElement,
 ) => {
+  PopperUtils;
   const elements = { anchorElement, popperElement: element };
-  const strategy: Strategy = "fixed";
+  const strategy: (typeof PopperUtils.strategies)[0] = "fixed";
 
-  const rects = getElementRects(elements, strategy);
+  const rects = PopperUtils.getElementRects(elements, strategy);
 
   const topSideCoordinates = {
     x: 0,
@@ -22,12 +22,12 @@ const calcBoundaryOverflow = (
 
   const overflowArgs = { strategy, elements, elementRects: rects };
 
-  const topSideOverflow = detectBoundaryOverflow({
+  const topSideOverflow = PopperUtils.detectBoundaryOverflow({
     ...overflowArgs,
     coordinates: topSideCoordinates,
   });
 
-  const bottomSideOverflow = detectBoundaryOverflow({
+  const bottomSideOverflow = PopperUtils.detectBoundaryOverflow({
     ...overflowArgs,
     coordinates: bottomSideCoordinates,
   });

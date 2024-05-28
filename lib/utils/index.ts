@@ -11,6 +11,7 @@ export { default as usePreviousValue } from "@utilityjs/use-previous-value";
 export { default as useRegisterNodeRef } from "@utilityjs/use-register-node-ref";
 export { default as useScrollGuard } from "@utilityjs/use-scroll-guard";
 export { computeAccessibleName } from "dom-accessibility-api";
+export * as PopperUtils from "../Popper/utils";
 export { default as componentWithForwardedRef } from "./component-with-forwarded-ref";
 export { default as createCustomEvent } from "./create-custom-event";
 export { default as createVirtualElement } from "./create-virtual-element";
