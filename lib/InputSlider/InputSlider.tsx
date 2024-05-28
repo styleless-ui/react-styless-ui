@@ -268,7 +268,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     return stops.reduce((result, currentStop, idx) => {
       const segment: StopSegment = {
-        length: inLerp(0, max, currentStop) * 100,
+        length: inLerp(min, max, currentStop) * 100,
         index: idx,
       };
 
@@ -276,7 +276,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       return result;
     }, [] as StopSegment[]);
-  }, [stops, max]);
+  }, [stops, max, min]);
 
   const isMounted = useIsMounted();
 
@@ -335,12 +335,12 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const getPositions = (): Positions => {
     const thumbsInfo = getThumbsInfo();
 
-    const infimum = inLerp(0, max, thumbsInfo.infimum.value) * 100;
-    const supremum = inLerp(max, 0, thumbsInfo.supremum.value) * 100;
+    const infimum = inLerp(min, max, thumbsInfo.infimum.value) * 100;
+    const supremum = inLerp(min, max, thumbsInfo.supremum.value) * 100;
 
     const range = {
       start: multiThumb ? infimum : 0,
-      end: multiThumb ? supremum : inLerp(max, 0, 100 - supremum) * 100,
+      end: 100 - supremum,
     };
 
     return { infimum, supremum, range };
@@ -376,15 +376,8 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   >(event => {
     if (readOnly || disabled || !isMounted()) return;
 
-    const increase = [
-      SystemKeys.RIGHT,
-      orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN,
-    ].includes(event.key);
-
-    const decrease = [
-      SystemKeys.LEFT,
-      orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP,
-    ].includes(event.key);
+    const increase = [SystemKeys.RIGHT, SystemKeys.UP].includes(event.key);
+    const decrease = [SystemKeys.LEFT, SystemKeys.DOWN].includes(event.key);
 
     const goStart = event.key === SystemKeys.HOME;
     const goEnd = event.key === SystemKeys.END;
@@ -490,6 +483,8 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     setTimeout(() => setIsClickAllowed(true), 10);
 
     thumb.setState(s => ({ ...s, active: false }));
+    thumb.ref.current?.focus();
+
     activeThumbRef.current = null;
   };
 
@@ -531,7 +526,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       widthOrHeight,
       thumbInfo,
       stopSegments,
-      { max, step },
+      { max, min, step, orientation },
     );
 
     if (multiThumb) {
@@ -574,7 +569,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       widthOrHeight,
       thumb,
       stopSegments,
-      { max, step },
+      { max, min, step, orientation },
     );
 
     if (multiThumb) {
@@ -589,6 +584,8 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         );
       }
     } else emitValueChange(relativeValue);
+
+    thumb.ref.current?.focus();
 
     onClick?.(event);
   };
@@ -711,6 +708,9 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       onClick={handleTrackClick}
       aria-orientation={orientation}
       data-slot={Slots.Root}
+      data-orientation={orientation}
+      data-multi-thumb={multiThumb ? "" : undefined}
+      data-dragging={isDragStarted ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
       data-readonly={readOnly ? "" : undefined}
     >

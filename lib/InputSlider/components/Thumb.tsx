@@ -161,24 +161,24 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const children = resolvePropWithRenderContext(childrenProp, renderProps);
   const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
+  let transformCSSProperty: React.CSSProperties["transform"];
+
+  if (orientation === "horizontal") {
+    transformCSSProperty = "translateX(-50%)";
+  } else {
+    transformCSSProperty = "translateY(50%)";
+  }
+
   const style: React.CSSProperties = {
     ...(styleProp ?? {}),
     ...disableUserSelectCSSProperties,
     ...{
-      horizontal: {
-        supremum: { right: `${position}%` },
-        infimum: { left: `${position}%` },
-      },
-      vertical: {
-        supremum: { bottom: `${position}%` },
-        infimum: { top: `${position}%` },
-      },
-    }[orientation][thumbName],
+      horizontal: { left: `${position}%` },
+      vertical: { bottom: `${position}%` },
+    }[orientation],
     zIndex,
     position: "absolute",
-    transform: `translate${orientation === "horizontal" ? "X" : "Y"}(${
-      thumbName === "infimum" ? -50 : 50
-    }%)`,
+    transform: transformCSSProperty,
   };
 
   let tabIndex = disabled ? -1 : 0;
