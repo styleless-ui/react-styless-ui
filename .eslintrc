@@ -6,27 +6,29 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
   ],
   "env": {
     "browser": true,
     "es6": true,
     "node": true,
-    "commonjs": true
+    "commonjs": true,
   },
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly",
-    "JSX": true
+    "JSX": true,
   },
   "plugins": [
     "import",
     "react",
     "react-hooks",
-    "@typescript-eslint/eslint-plugin"
+    "@typescript-eslint/eslint-plugin",
   ],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": { "sourceType": "module" },
+  "parserOptions": {
+    "sourceType": "module",
+  },
   "rules": {
     "no-alert": "error",
     "no-console": "warn",
@@ -39,10 +41,17 @@
     "no-promise-executor-return": "error",
     "no-unmodified-loop-condition": "warn",
     "eqeqeq": ["error", "smart"],
-    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "no-duplicate-imports": [
+      "error",
+      {
+        "includeExports": true,
+      },
+    ],
     "@typescript-eslint/consistent-type-imports": [
       "error",
-      { "fixStyle": "inline-type-imports" }
+      {
+        "fixStyle": "inline-type-imports",
+      },
     ],
     "padding-line-between-statements": [
       "error",
@@ -57,27 +66,30 @@
           "class",
           "block",
           "block-like",
-          "multiline-block-like"
+          "multiline-block-like",
         ],
-        "next": "*"
+        "next": "*",
       },
       {
         "blankLine": "any",
         "prev": ["const", "let", "var", "directive"],
-        "next": ["const", "let", "var", "directive"]
+        "next": ["const", "let", "var", "directive"],
       },
       {
         "blankLine": "always",
         "prev": ["multiline-const", "multiline-let"],
-        "next": "*"
-      }
+        "next": "*",
+      },
     ],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-    ]
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+      },
+    ],
   },
   "overrides": [
     {
@@ -85,24 +97,28 @@
       "extends": [
         "plugin:import/typescript",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
       "parserOptions": {
         "sourceType": "module",
-        "project": ["tsconfig.json"]
-      }
+        "project": ["tsconfig.json"],
+      },
     },
     {
       "files": [
         "**/__tests__/**/*.[jt]s?(x)",
-        "**/?(*.)+(spec|test).[jt]s?(x)"
+        "**/?(*.)+(spec|test).[jt]s?(x)",
       ],
       "extends": [
         "plugin:testing-library/react",
         "plugin:jest-dom/recommended",
-        "plugin:jest/recommended"
-      ]
-    }
+        "plugin:jest/recommended",
+      ],
+    },
   ],
-  "settings": { "react": { "version": "detect" } }
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
 }

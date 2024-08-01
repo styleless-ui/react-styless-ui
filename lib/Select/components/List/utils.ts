@@ -4,7 +4,6 @@ const calcBoundaryOverflow = (
   anchorElement: HTMLElement,
   element: HTMLElement,
 ) => {
-  PopperUtils;
   const elements = { anchorElement, popperElement: element };
   const strategy: (typeof PopperUtils.strategies)[0] = "fixed";
 
